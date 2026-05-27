@@ -9,7 +9,9 @@ function Navbar() {
           <Link to="/" className="hover:text-white">
             Home
           </Link>
-
+          <Link to="/dashboard" className="hover:text-white">
+            Dashboard
+          </Link>
           <Link to="/events" className="hover:text-white">
             Events
           </Link>

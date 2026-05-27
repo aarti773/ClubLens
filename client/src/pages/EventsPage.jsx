@@ -3,18 +3,21 @@ import EventCard from "../components/EventCard";
 
 const events = [
   {
+    id: 1,
     title: "Freshers Cultural Night",
     date: "12 September 2026",
     category: "Cultural",
     visibility: "Public",
   },
   {
+    id: 2,
     title: "Robotics Workshop",
     date: "24 September 2026",
     category: "Workshop",
     visibility: "Private",
   },
   {
+    id: 3,
     title: "Mountain Trip Gallery",
     date: "3 October 2026",
     category: "Trip",
