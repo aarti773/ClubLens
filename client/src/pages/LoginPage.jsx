@@ -1,7 +1,9 @@
 import MainLayout from "../layouts/MainLayout";
 import { Link } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 function LoginPage() {
+  const { login } = useAuth();
   return (
     <MainLayout>
       <section className="mx-auto flex max-w-md flex-col px-6 py-16">
@@ -22,9 +24,13 @@ function LoginPage() {
             className="w-full rounded-xl border border-white/10 bg-slate-900 px-4 py-3 outline-none"
           />
 
-          <button className="w-full rounded-xl bg-white px-5 py-3 font-medium text-slate-900">
-            Sign in
-          </button>
+          <button
+  type="button"
+  onClick={login}
+  className="w-full rounded-xl bg-white px-5 py-3 font-medium text-slate-900"
+>
+  Sign in
+</button>
         </form>
         <p className="mt-5 text-center text-sm text-slate-400">
           New to ClubLens?{" "}
