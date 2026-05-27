@@ -4,6 +4,8 @@ import HomePage from "./pages/HomePage";
 import GalleryPage from "./pages/GalleryPage";
 import SearchPage from "./pages/SearchPage";
 import UploadPage from "./pages/UploadPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 
 
 function App() {
@@ -14,7 +16,9 @@ function App() {
       <Route path="/gallery" element={<GalleryPage />} />
       <Route path="/search" element={<SearchPage />} />
       <Route path="/upload" element={<UploadPage />} />
-      
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+
 
     </Routes>
   );

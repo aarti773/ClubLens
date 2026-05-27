@@ -20,12 +20,15 @@ function Navbar() {
           <Link to="/search" className="hover:text-white">
             AI Search
           </Link>
+          <Link to="/login" className="hover:text-white">
+            Sign in
+          </Link>
           <Link
-  to="/upload"
-  className="rounded-lg bg-white px-4 py-2 font-medium text-slate-950"
->
-  Upload
-</Link>
+            to="/upload"
+            className="rounded-lg bg-white px-4 py-2 font-medium text-slate-950"
+          >
+            Upload
+          </Link>
         </div>
       </nav>
     </header>
