@@ -7,15 +7,19 @@ function Navbar() {
 
         <div className="flex items-center gap-5 text-sm text-slate-300">
           <Link to="/" className="hover:text-white">
-  Home
-</Link>
+            Home
+          </Link>
 
-<Link to="/events" className="hover:text-white">
-  Events
-</Link>
+          <Link to="/events" className="hover:text-white">
+            Events
+          </Link>
 
-<span>Gallery</span>
-<span>AI Search</span>
+          <Link to="/gallery" className="hover:text-white">
+            Gallery
+          </Link>
+          <Link to="/search" className="hover:text-white">
+            AI Search
+          </Link>
           <button className="rounded-lg bg-white px-4 py-2 font-medium text-slate-950">
             Sign in
           </button>
