@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
-import { getEventById, getEventMedia } from "../services/authService";
+
+import {
+  getEventById,
+  getEventMedia,
+  uploadEventMedia,
+} from "../services/authService";
+
+import { useAuth } from "../context/AuthContext";
 
 function EventDetailPage() {
   const { id } = useParams();
@@ -10,6 +17,12 @@ function EventDetailPage() {
   const [event, setEvent] = useState(null);
   const [media, setMedia] = useState([]);
   const [error, setError] = useState("");
+
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [caption, setCaption] = useState("");
+  const [uploading, setUploading] = useState(false);
+
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
     async function loadEventDetails() {
@@ -26,6 +39,35 @@ function EventDetailPage() {
 
     loadEventDetails();
   }, [id]);
+
+  async function handleUpload() {
+    try {
+      if (!selectedImage) {
+        setError("Please select an image first");
+        return;
+      }
+
+      const token = localStorage.getItem("token");
+
+      const formData = new FormData();
+      formData.append("image", selectedImage);
+      formData.append("caption", caption);
+      formData.append("event", id);
+
+      setUploading(true);
+
+      const uploadedMedia = await uploadEventMedia(formData, token);
+
+      setMedia((prevMedia) => [uploadedMedia, ...prevMedia]);
+      setSelectedImage(null);
+      setCaption("");
+      setError("");
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setUploading(false);
+    }
+  }
 
   return (
     <MainLayout>
@@ -67,6 +109,39 @@ function EventDetailPage() {
                   </p>
                 </div>
               </div>
+
+              {isLoggedIn && (
+                <div className="mb-8 rounded-2xl border border-white/10 bg-white/5 p-5">
+                  <h3 className="font-semibold">Upload a photo</h3>
+
+                  <div className="mt-4 grid gap-4 md:grid-cols-3">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) =>
+                        setSelectedImage(event.target.files[0])
+                      }
+                      className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm"
+                    />
+
+                    <input
+                      type="text"
+                      placeholder="Caption"
+                      value={caption}
+                      onChange={(event) => setCaption(event.target.value)}
+                      className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm outline-none"
+                    />
+
+                    <button
+                      onClick={handleUpload}
+                      disabled={uploading}
+                      className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 disabled:opacity-60"
+                    >
+                      {uploading ? "Uploading..." : "Upload Photo"}
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {media.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 p-8 text-center">

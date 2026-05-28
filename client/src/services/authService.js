@@ -79,3 +79,29 @@ export async function getEventMedia(eventId) {
 
   return data;
 }
+
+export async function uploadEventMedia(
+  formData,
+  token
+) {
+  const response = await fetch(
+    "http://localhost:5000/api/media/upload",
+    {
+      method: "POST",
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+
+      body: formData,
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+}
