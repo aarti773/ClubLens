@@ -1,3 +1,4 @@
+const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const express = require("express");
 const cors = require("cors");
@@ -11,6 +12,7 @@ app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 app.get("/", (req, res) => {
   res.json({
