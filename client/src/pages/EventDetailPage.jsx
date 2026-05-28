@@ -7,6 +7,7 @@ import {
   getEventById,
   getEventMedia,
   uploadEventMedia,
+  deleteEventMedia,
 } from "../services/authService";
 
 import { useAuth } from "../context/AuthContext";
@@ -66,6 +67,18 @@ function EventDetailPage() {
       setError(error.message);
     } finally {
       setUploading(false);
+    }
+  }
+
+  async function handleDelete(mediaId) {
+    try {
+      const token = localStorage.getItem("token");
+
+      await deleteEventMedia(mediaId, token);
+
+      setMedia((prevMedia) => prevMedia.filter((item) => item._id !== mediaId));
+    } catch (error) {
+      setError(error.message);
     }
   }
 
@@ -171,6 +184,14 @@ function EventDetailPage() {
                         <p className="mt-2 text-sm text-slate-400">
                           Uploaded by {item.uploadedBy?.name || "member"}
                         </p>
+                        {isLoggedIn && (
+                          <button
+                            onClick={() => handleDelete(item._id)}
+                            className="mt-4 rounded-lg border border-red-500/30 px-3 py-2 text-xs font-medium text-red-300 hover:bg-red-500/10"
+                          >
+                            Delete Photo
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}

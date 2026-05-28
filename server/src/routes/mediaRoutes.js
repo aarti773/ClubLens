@@ -3,6 +3,7 @@ const express = require("express");
 const {
   uploadMedia,
   getEventMedia,
+  deleteMedia,
 } = require("../controllers/mediaController");
 
 const { protect } = require("../middleware/authMiddleware");
@@ -21,6 +22,12 @@ router.post(
 router.get(
   "/event/:eventId",
   getEventMedia
+);
+
+router.delete(
+  "/:mediaId",
+  protect,
+  deleteMedia
 );
 
 module.exports = router;

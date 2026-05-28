@@ -41,7 +41,36 @@ const getEventMedia = async (req, res) => {
   }
 };
 
+const deleteMedia = async (req, res) => {
+  try {
+    const media = await Media.findById(req.params.mediaId);
+
+    if (!media) {
+      return res.status(404).json({
+        message: "Media not found",
+      });
+    }
+
+    if (media.uploadedBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: "You can delete only your own uploads",
+      });
+    }
+
+    await media.deleteOne();
+
+    res.status(200).json({
+      message: "Media deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+}; 
+
 module.exports = {
   uploadMedia,
   getEventMedia,
+  deleteMedia,
 };
