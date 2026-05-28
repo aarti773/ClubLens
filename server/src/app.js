@@ -1,3 +1,4 @@
+const eventRoutes = require("./routes/eventRoutes");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const express = require("express");
@@ -13,7 +14,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-
+app.use("/api/events", eventRoutes);
 app.get("/", (req, res) => {
   res.json({
     message: "ClubLens API running",
