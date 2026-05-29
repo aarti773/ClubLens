@@ -73,3 +73,72 @@ export async function getEventMedia(eventId) {
 
   return data;
 }
+
+export async function toggleMediaLike(mediaId, token) {
+  const response = await fetch(
+    `http://localhost:5000/api/media/${mediaId}/like`,
+    {
+      method: "POST",
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+}
+
+export async function addMediaComment(mediaId, text, token) {
+  const response = await fetch(
+    `http://localhost:5000/api/media/${mediaId}/comments`,
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+
+      body: JSON.stringify({ text }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+}
+
+export async function toggleMediaFavourite(
+  mediaId,
+  token
+) {
+  const response = await fetch(
+    `http://localhost:5000/api/media/${mediaId}/favourite`,
+    {
+      method: "POST",
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+}

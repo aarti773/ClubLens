@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
 import { useAuth } from "../context/AuthContext";
@@ -8,6 +8,8 @@ import { loginUser } from "../services/authService";
 
 function LoginPage() {
   const { login } = useAuth();
+  const navigate = useNavigate();
+
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     email: "",
@@ -15,6 +17,7 @@ function LoginPage() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   function handleChange(event) {
     setFormData({
@@ -28,12 +31,16 @@ function LoginPage() {
 
     try {
       setError("");
+      setLoading(true);
 
       const data = await loginUser(formData);
 
       login(data);
+      navigate("/dashboard");
     } catch (error) {
       setError(error.message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -82,8 +89,11 @@ function LoginPage() {
             </button>
           </div>
 
-          <button className="w-full rounded-xl bg-white px-5 py-3 font-medium text-slate-900">
-            Sign in
+          <button
+            disabled={loading}
+            className="w-full rounded-xl bg-white px-5 py-3 font-medium text-slate-900 disabled:opacity-60"
+          >
+            {loading ? "Signing in..." : "Sign in"}
           </button>
         </form>
 

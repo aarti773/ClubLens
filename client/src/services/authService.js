@@ -67,8 +67,19 @@ export async function getEventById(eventId) {
 }
 
 export async function getEventMedia(eventId) {
+  const token = localStorage.getItem("token");
+
+  const headers = {};
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
   const response = await fetch(
-    `http://localhost:5000/api/media/event/${eventId}`
+    `http://localhost:5000/api/media/event/${eventId}`,
+    {
+      headers,
+    }
   );
 
   const data = await response.json();
@@ -146,6 +157,95 @@ export async function createEvent(
 
       body: JSON.stringify(eventData),
     }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+}
+
+export async function toggleMediaLike(
+  mediaId,
+  token
+) {
+  const response = await fetch(
+    `http://localhost:5000/api/media/${mediaId}/like`,
+    {
+      method: "POST",
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+}
+
+export async function addMediaComment(
+  mediaId,
+  text,
+  token
+) {
+  const response = await fetch(
+    `http://localhost:5000/api/media/${mediaId}/comments`,
+    {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+
+      body: JSON.stringify({ text }),
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+}
+export async function toggleMediaFavourite(
+  mediaId,
+  token
+) {
+  const response = await fetch(
+    `http://localhost:5000/api/media/${mediaId}/favourite`,
+    {
+      method: "POST",
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message);
+  }
+
+  return data;
+}
+
+export async function searchMedia(query) {
+  const response = await fetch(
+    `http://localhost:5000/api/media/search?query=${encodeURIComponent(query)}`
   );
 
   const data = await response.json();

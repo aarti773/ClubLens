@@ -8,6 +8,9 @@ import {
   getEventMedia,
   uploadEventMedia,
   deleteEventMedia,
+  toggleMediaLike,
+  addMediaComment,
+  toggleMediaFavourite,
 } from "../services/authService";
 
 import { useAuth } from "../context/AuthContext";
@@ -21,9 +24,13 @@ function EventDetailPage() {
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [caption, setCaption] = useState("");
-  const [uploading, setUploading] = useState(false);
+  const [visibility, setVisibility] = useState("public");
+  const [tags, setTags] = useState("");
 
-  const { isLoggedIn } = useAuth();
+  const [uploading, setUploading] = useState(false);
+  const [commentInputs, setCommentInputs] = useState({});
+
+  const { isLoggedIn, user } = useAuth();
 
   useEffect(() => {
     async function loadEventDetails() {
@@ -54,7 +61,8 @@ function EventDetailPage() {
       formData.append("image", selectedImage);
       formData.append("caption", caption);
       formData.append("event", id);
-
+      formData.append("visibility", visibility);
+      formData.append("tags", tags);
       setUploading(true);
 
       const uploadedMedia = await uploadEventMedia(formData, token);
@@ -62,6 +70,8 @@ function EventDetailPage() {
       setMedia((prevMedia) => [uploadedMedia, ...prevMedia]);
       setSelectedImage(null);
       setCaption("");
+      setTags("");
+setVisibility("public");
       setError("");
     } catch (error) {
       setError(error.message);
@@ -77,6 +87,73 @@ function EventDetailPage() {
       await deleteEventMedia(mediaId, token);
 
       setMedia((prevMedia) => prevMedia.filter((item) => item._id !== mediaId));
+    } catch (error) {
+      setError(error.message);
+    }
+  }
+
+  async function handleLike(mediaId) {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await toggleMediaLike(mediaId, token);
+
+      setMedia((prevMedia) =>
+        prevMedia.map((item) =>
+          item._id === mediaId
+            ? {
+                ...item,
+                likes: response.likes,
+              }
+            : item,
+        ),
+      );
+    } catch (error) {
+      setError(error.message);
+    }
+  }
+
+  async function handleFavourite(mediaId) {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await toggleMediaFavourite(mediaId, token);
+
+      setMedia((prevMedia) =>
+        prevMedia.map((item) =>
+          item._id === mediaId
+            ? {
+                ...item,
+                favourites: response.favourites,
+              }
+            : item,
+        ),
+      );
+    } catch (error) {
+      setError(error.message);
+    }
+  }
+
+  async function handleComment(mediaId) {
+    try {
+      const token = localStorage.getItem("token");
+
+      const text = commentInputs[mediaId];
+
+      if (!text?.trim()) {
+        return;
+      }
+
+      const updatedMedia = await addMediaComment(mediaId, text, token);
+
+      setMedia((prevMedia) =>
+        prevMedia.map((item) => (item._id === mediaId ? updatedMedia : item)),
+      );
+
+      setCommentInputs((prev) => ({
+        ...prev,
+        [mediaId]: "",
+      }));
     } catch (error) {
       setError(error.message);
     }
@@ -144,6 +221,22 @@ function EventDetailPage() {
                       onChange={(event) => setCaption(event.target.value)}
                       className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm outline-none"
                     />
+                    <select
+                      value={visibility}
+                      onChange={(event) => setVisibility(event.target.value)}
+                      className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm outline-none"
+                    >
+                      <option value="public">Public</option>
+                      <option value="private">Private</option>
+                    </select>
+
+                    <input
+                      type="text"
+                      placeholder="Tags: workshop, crowd, cultural"
+                      value={tags}
+                      onChange={(event) => setTags(event.target.value)}
+                      className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm outline-none"
+                    />
 
                     <button
                       onClick={handleUpload}
@@ -184,7 +277,87 @@ function EventDetailPage() {
                         <p className="mt-2 text-sm text-slate-400">
                           Uploaded by {item.uploadedBy?.name || "member"}
                         </p>
+
+                        {item.tags?.length > 0 && (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            {item.tags.map((tag) => (
+                              <span
+                                key={tag}
+                                className="rounded-full bg-white/10 px-3 py-1 text-xs text-slate-300"
+                              >
+                                #{tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="mt-4 flex items-center gap-3">
+                          <button
+                            onClick={() => handleLike(item._id)}
+                            className="rounded-lg border border-white/10 px-3 py-2 text-xs text-slate-300 hover:bg-white/10"
+                          >
+                            Like ({item.likes?.length || 0})
+                          </button>
+                          <button
+                            onClick={() => handleFavourite(item._id)}
+                            className="rounded-lg border border-yellow-500/30 px-3 py-2 text-xs text-yellow-300 hover:bg-yellow-500/10"
+                          >
+                            Favourite ({item.favourites?.length || 0})
+                          </button>
+                          <a
+                            href={item.imageUrl.replace(
+                              "/upload/",
+                              "/upload/fl_attachment/",
+                            )}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="rounded-lg border border-green-500/30 px-3 py-2 text-xs text-green-300 hover:bg-green-500/10"
+                          >
+                            Download
+                          </a>
+                          <span className="text-xs text-slate-500">
+                            {item.comments?.length || 0} comments
+                          </span>
+                        </div>
+
+                        <div className="mt-4 space-y-2">
+                          {item.comments?.slice(-2).map((comment) => (
+                            <p
+                              key={comment._id}
+                              className="rounded-lg bg-slate-900 px-3 py-2 text-xs text-slate-300"
+                            >
+                              <span className="font-medium text-white">
+                                {comment.user?.name || "User"}:
+                              </span>{" "}
+                              {comment.text}
+                            </p>
+                          ))}
+                        </div>
+
                         {isLoggedIn && (
+                          <div className="mt-4 flex gap-2">
+                            <input
+                              type="text"
+                              placeholder="Add comment..."
+                              value={commentInputs[item._id] || ""}
+                              onChange={(event) =>
+                                setCommentInputs((prev) => ({
+                                  ...prev,
+                                  [item._id]: event.target.value,
+                                }))
+                              }
+                              className="min-w-0 flex-1 rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-xs outline-none"
+                            />
+
+                            <button
+                              onClick={() => handleComment(item._id)}
+                              className="rounded-lg bg-white px-3 py-2 text-xs font-medium text-slate-950"
+                            >
+                              Post
+                            </button>
+                          </div>
+                        )}
+                        {isLoggedIn && item.uploadedBy?._id === user?._id && (
                           <button
                             onClick={() => handleDelete(item._id)}
                             className="mt-4 rounded-lg border border-red-500/30 px-3 py-2 text-xs font-medium text-red-300 hover:bg-red-500/10"
