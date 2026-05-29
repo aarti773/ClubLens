@@ -1,14 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import {
+  getNotifications,
+  markNotificationsAsRead,
+} from "../api/notificationApi";
 
 function Navbar() {
   const { isLoggedIn, logout, user } = useAuth();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   const avatarLetter = user?.name?.charAt(0)?.toUpperCase() || "G";
+  const unreadCount = notifications.filter(
+    (notification) => !notification.isRead,
+  ).length;
+
+  useEffect(() => {
+    async function fetchNotifications() {
+      try {
+        const token = localStorage.getItem("token");
+
+        if (!token || !isLoggedIn) {
+          setNotifications([]);
+          return;
+        }
+
+        const data = await getNotifications(token);
+        setNotifications(data);
+      } catch (error) {
+        console.error(error.message);
+      }
+    }
+
+    fetchNotifications();
+  }, [isLoggedIn]);
 
   return (
     <header className="border-b border-white/10 bg-slate-950/90 text-white">
@@ -18,18 +47,97 @@ function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-4 text-sm text-slate-300 md:flex">
-          <Link to="/" className="hover:text-white">Home</Link>
-          <Link to="/dashboard" className="hover:text-white">Dashboard</Link>
-          <Link to="/events" className="hover:text-white">Events</Link>
-          <Link to="/gallery" className="hover:text-white">Gallery</Link>
-          <Link to="/search" className="hover:text-white">AI Search</Link>
+          <Link to="/" className="hover:text-white">
+            Home
+          </Link>
+          <Link to="/dashboard" className="hover:text-white">
+            Dashboard
+          </Link>
+          <Link to="/events" className="hover:text-white">
+            Events
+          </Link>
+          <Link to="/gallery" className="hover:text-white">
+            Gallery
+          </Link>
+          <Link to="/search" className="hover:text-white">
+            AI Search
+          </Link>
 
           {user?.role === "admin" && (
             <Link to="/create-event" className="hover:text-white">
               Create Event
             </Link>
           )}
+          {isLoggedIn && (
+            <div className="relative">
+              <button
+                onClick={() => {
+                  setIsNotificationOpen(!isNotificationOpen);
+                }}
+                className="relative rounded-full border border-white/10 px-3 py-2 text-lg hover:bg-white/10"
+              >
+                🔔
+                {unreadCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-xs font-bold text-white">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
 
+              {isNotificationOpen && (
+                <div className="absolute right-0 top-12 z-50 w-80 rounded-2xl border border-white/10 bg-slate-900 p-4 shadow-xl">
+                  <h3 className="mb-3 font-semibold text-white">
+                    Notifications
+                  </h3>
+
+                  {notifications.length === 0 ? (
+                    <p className="text-sm text-slate-400">
+                      No notifications yet.
+                    </p>
+                  ) : (
+                    <div className="max-h-80 space-y-3 overflow-y-auto">
+                      {notifications.map((notification) => (
+                        <Link
+                          key={notification._id}
+                          to={`/events/${notification.media?.event}`}
+                          onClick={async () => {
+                            const token = localStorage.getItem("token");
+
+                            if (token) {
+                              await markNotificationsAsRead(token);
+                            }
+
+                            setNotifications((prevNotifications) =>
+                              prevNotifications.filter(
+                                (item) => item._id !== notification._id,
+                              ),
+                            );
+
+                            setIsNotificationOpen(false);
+                            setIsProfileOpen(false);
+                          }}
+                          className="block rounded-xl bg-white/5 p-3 text-sm hover:bg-white/10"
+                        >
+                          <p className="text-white">
+                            <span className="font-semibold">
+                              {notification.sender?.name || "Someone"}
+                            </span>{" "}
+                            {notification.message}
+                          </p>
+
+                          {notification.media?.caption && (
+                            <p className="mt-1 text-xs text-slate-400">
+                              “{notification.media.caption}”
+                            </p>
+                          )}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
           <div className="relative">
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -42,20 +150,15 @@ function Navbar() {
               <div className="absolute right-0 top-12 z-50 w-64 rounded-2xl border border-white/10 bg-slate-900 p-4 shadow-xl">
                 {isLoggedIn ? (
                   <>
-                    <p className="font-semibold text-white">
-                      {user?.name}
-                    </p>
+                    <p className="font-semibold text-white">{user?.name}</p>
 
-                    <p className="mt-1 text-xs text-slate-400">
-                      {user?.email}
-                    </p>
+                    <p className="mt-1 text-xs text-slate-400">{user?.email}</p>
 
                     <span className="mt-3 inline-flex rounded-full bg-white/10 px-3 py-1 text-xs capitalize text-slate-300">
                       {user?.role}
                     </span>
 
                     <div className="mt-4 flex flex-col gap-2">
-                    
                       <button
                         onClick={() => {
                           logout();
@@ -69,9 +172,7 @@ function Navbar() {
                   </>
                 ) : (
                   <>
-                    <p className="font-semibold text-white">
-                      Guest user
-                    </p>
+                    <p className="font-semibold text-white">Guest user</p>
 
                     <p className="mt-1 text-xs text-slate-400">
                       Sign in to upload private media and interact with albums.
@@ -101,11 +202,21 @@ function Navbar() {
 
       {isMenuOpen && (
         <div className="space-y-4 border-t border-white/10 px-6 py-5 text-sm text-slate-300 md:hidden">
-          <Link to="/" className="block hover:text-white">Home</Link>
-          <Link to="/dashboard" className="block hover:text-white">Dashboard</Link>
-          <Link to="/events" className="block hover:text-white">Events</Link>
-          <Link to="/gallery" className="block hover:text-white">Gallery</Link>
-          <Link to="/search" className="block hover:text-white">AI Search</Link>
+          <Link to="/" className="block hover:text-white">
+            Home
+          </Link>
+          <Link to="/dashboard" className="block hover:text-white">
+            Dashboard
+          </Link>
+          <Link to="/events" className="block hover:text-white">
+            Events
+          </Link>
+          <Link to="/gallery" className="block hover:text-white">
+            Gallery
+          </Link>
+          <Link to="/search" className="block hover:text-white">
+            AI Search
+          </Link>
 
           {user?.role === "admin" && (
             <Link to="/create-event" className="block hover:text-white">
@@ -116,6 +227,60 @@ function Navbar() {
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             {isLoggedIn ? (
               <>
+                <div className="mb-4">
+                  <button
+                    onClick={() => {
+                      setIsNotificationOpen(!isNotificationOpen);
+                    }}
+                    className="relative rounded-lg border border-white/10 px-4 py-2 text-white"
+                  >
+                    🔔 Notifications
+                    {unreadCount > 0 && (
+                      <span className="ml-2 rounded-full bg-red-500 px-2 py-1 text-xs">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </button>
+
+                  {isNotificationOpen && (
+                    <div className="relative z-50 mt-3 space-y-2 rounded-lg bg-white/5 p-3">
+                      {notifications.length === 0 ? (
+                        <p className="text-sm text-slate-400">
+                          No notifications yet.
+                        </p>
+                      ) : (
+                        notifications.map((notification) => (
+                          <Link
+                            key={notification._id}
+                            to={`/events/${notification.media?.event}`}
+                            onClick={async () => {
+                              const token = localStorage.getItem("token");
+
+                              if (token) {
+                                await markNotificationsAsRead(token);
+                              }
+
+                              setNotifications((prevNotifications) =>
+                                prevNotifications.filter(
+                                  (item) => item._id !== notification._id,
+                                ),
+                              );
+
+                              setIsNotificationOpen(false);
+                              setIsMenuOpen(false);
+                            }}
+                            className="block rounded-lg bg-white/5 p-2 text-sm hover:bg-white/10"
+                          >
+                            <span className="font-semibold">
+                              {notification.sender?.name}
+                            </span>{" "}
+                            {notification.message}
+                          </Link>
+                        ))
+                      )}
+                    </div>
+                  )}
+                </div>
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white font-semibold text-slate-950">
                     {avatarLetter}

@@ -3,7 +3,7 @@ const {
 } = require("../utils/aiTagGenerator");
 
 const Media = require("../models/Media");
-
+const Notification = require("../models/Notification");
 const uploadMedia = async (req, res) => {
   try {
    const { caption, event, visibility, tags } = req.body;
@@ -104,12 +104,25 @@ const toggleLikeMedia = async (req, res) => {
     );
 
     if (alreadyLiked) {
-      media.likes = media.likes.filter(
-        (userId) => userId.toString() !== req.user._id.toString()
-      );
-    } else {
-      media.likes.push(req.user._id);
-    }
+  media.likes = media.likes.filter(
+    (userId) => userId.toString() !== req.user._id.toString()
+  );
+} else {
+  media.likes.push(req.user._id);
+
+  if (
+    media.uploadedBy.toString() !==
+    req.user._id.toString()
+  ) {
+    await Notification.create({
+      recipient: media.uploadedBy,
+      sender: req.user._id,
+      media: media._id,
+      type: "like",
+      message: "liked your photo",
+    });
+  }
+}
 
     await media.save();
 
@@ -139,15 +152,27 @@ const toggleFavouriteMedia = async (req, res) => {
         userId.toString() === req.user._id.toString()
     );
 
-    if (alreadyFavourited) {
-      media.favourites = media.favourites.filter(
-        (userId) =>
-          userId.toString() !== req.user._id.toString()
-      );
-    } else {
-      media.favourites.push(req.user._id);
-    }
+   if (alreadyFavourited) {
+  media.favourites = media.favourites.filter(
+    (userId) =>
+      userId.toString() !== req.user._id.toString()
+  );
+} else {
+  media.favourites.push(req.user._id);
 
+  if (
+    media.uploadedBy.toString() !==
+    req.user._id.toString()
+  ) {
+    await Notification.create({
+      recipient: media.uploadedBy,
+      sender: req.user._id,
+      media: media._id,
+      type: "favourite",
+      message: "added your photo to favourites",
+    });
+  }
+}
     await media.save();
 
     res.status(200).json({
@@ -181,11 +206,24 @@ const addCommentToMedia = async (req, res) => {
     }
 
     media.comments.push({
-      user: req.user._id,
-      text,
-    });
+  user: req.user._id,
+  text,
+});
 
-    await media.save();
+if (
+  media.uploadedBy.toString() !==
+  req.user._id.toString()
+) {
+  await Notification.create({
+    recipient: media.uploadedBy,
+    sender: req.user._id,
+    media: media._id,
+    type: "comment",
+    message: "commented on your photo",
+  });
+}
+
+await media.save();
 
     const updatedMedia = await Media.findById(req.params.mediaId)
       .populate("uploadedBy", "name")
