@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
 import { useAuth } from "../context/AuthContext";
@@ -8,6 +8,7 @@ import { registerUser } from "../services/authService";
 
 function RegisterPage() {
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -34,6 +35,7 @@ function RegisterPage() {
       const data = await registerUser(formData);
 
       login(data);
+      navigate("/dashboard");
     } catch (error) {
       setError(error.message);
     }

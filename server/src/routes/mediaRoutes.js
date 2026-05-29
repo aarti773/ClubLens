@@ -15,6 +15,8 @@ const {
   optionalAuth,
 } = require("../middleware/authMiddleware");
 
+const { allowRoles } = require("../middleware/roleMiddleware");
+
 const upload = require("../middleware/uploadMiddleware");
 
 const router = express.Router();
@@ -22,6 +24,7 @@ const router = express.Router();
 router.post(
   "/upload",
   protect,
+  allowRoles("admin", "photographer"),
   upload.single("image"),
   uploadMedia
 );
