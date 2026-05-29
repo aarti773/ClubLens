@@ -22,16 +22,18 @@ function EventDetailPage() {
   const [media, setMedia] = useState([]);
   const [error, setError] = useState("");
 
-  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [isDragging, setIsDragging] = useState(false);
   const [caption, setCaption] = useState("");
   const [visibility, setVisibility] = useState("public");
   const [tags, setTags] = useState("");
 
   const [uploading, setUploading] = useState(false);
+  const [fileInputKey, setFileInputKey] = useState(Date.now());
   const [commentInputs, setCommentInputs] = useState({});
 
   const { isLoggedIn, user } = useAuth();
-
+  const currentUserId = user?._id || user?.id;
   useEffect(() => {
     async function loadEventDetails() {
       try {
@@ -50,34 +52,54 @@ function EventDetailPage() {
 
   async function handleUpload() {
     try {
-      if (!selectedImage) {
-        setError("Please select an image first");
+      if (selectedImages.length === 0) {
+        setError("Please select at least one image");
         return;
       }
-
       const token = localStorage.getItem("token");
 
-      const formData = new FormData();
-      formData.append("image", selectedImage);
-      formData.append("caption", caption);
-      formData.append("event", id);
-      formData.append("visibility", visibility);
-      formData.append("tags", tags);
       setUploading(true);
 
-      const uploadedMedia = await uploadEventMedia(formData, token);
+      const uploadedItems = [];
 
-      setMedia((prevMedia) => [uploadedMedia, ...prevMedia]);
-      setSelectedImage(null);
+      for (const image of selectedImages) {
+        const formData = new FormData();
+
+        formData.append("image", image);
+        formData.append("caption", caption);
+        formData.append("event", id);
+        formData.append("visibility", visibility);
+        formData.append("tags", tags);
+
+        const uploadedMedia = await uploadEventMedia(formData, token);
+
+        uploadedItems.push(uploadedMedia);
+      }
+
+      setMedia((prevMedia) => [...uploadedItems, ...prevMedia]);
+
+      setSelectedImages([]);
+      setFileInputKey(Date.now());
       setCaption("");
       setTags("");
-setVisibility("public");
+      setVisibility("public");
       setError("");
     } catch (error) {
       setError(error.message);
     } finally {
       setUploading(false);
     }
+  }
+
+  function handleDrop(event) {
+    event.preventDefault();
+    setIsDragging(false);
+
+    const droppedFiles = Array.from(event.dataTransfer.files).filter((file) =>
+      file.type.startsWith("image/"),
+    );
+
+    setSelectedImages(droppedFiles);
   }
 
   async function handleDelete(mediaId) {
@@ -205,14 +227,34 @@ setVisibility("public");
                   <h3 className="font-semibold">Upload a photo</h3>
 
                   <div className="mt-4 grid gap-4 md:grid-cols-3">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(event) =>
-                        setSelectedImage(event.target.files[0])
-                      }
-                      className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm"
-                    />
+                    <label
+                      onDragOver={(event) => {
+                        event.preventDefault();
+                        setIsDragging(true);
+                      }}
+                      onDragLeave={() => setIsDragging(false)}
+                      onDrop={handleDrop}
+                      className={`cursor-pointer rounded-xl border border-dashed px-4 py-6 text-center text-sm transition ${
+                        isDragging
+                          ? "border-white bg-white/10 text-white"
+                          : "border-white/10 bg-slate-900 text-slate-400"
+                      }`}
+                    >
+                      <input
+                        key={fileInputKey}
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={(event) =>
+                          setSelectedImages(Array.from(event.target.files))
+                        }
+                        className="hidden"
+                      />
+
+                      {selectedImages.length > 0
+                        ? `${selectedImages.length} image(s) selected`
+                        : "Drag & drop images or click to select"}
+                    </label>
 
                     <input
                       type="text"
@@ -357,14 +399,16 @@ setVisibility("public");
                             </button>
                           </div>
                         )}
-                        {isLoggedIn && item.uploadedBy?._id === user?._id && (
-                          <button
-                            onClick={() => handleDelete(item._id)}
-                            className="mt-4 rounded-lg border border-red-500/30 px-3 py-2 text-xs font-medium text-red-300 hover:bg-red-500/10"
-                          >
-                            Delete Photo
-                          </button>
-                        )}
+                        {isLoggedIn &&
+                          (item.uploadedBy?._id === currentUserId ||
+                            item.uploadedBy === currentUserId) && (
+                            <button
+                              onClick={() => handleDelete(item._id)}
+                              className="mt-4 rounded-lg border border-red-500/30 px-3 py-2 text-xs font-medium text-red-300 hover:bg-red-500/10"
+                            >
+                              Delete Photo
+                            </button>
+                          )}
                       </div>
                     </div>
                   ))}
