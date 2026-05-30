@@ -24,7 +24,7 @@ const router = express.Router();
 router.post(
   "/upload",
   protect,
-  allowRoles("admin", "photographer"),
+  allowRoles("admin", "photographer", "member"),
   upload.single("image"),
   uploadMedia
 );

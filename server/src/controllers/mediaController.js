@@ -246,17 +246,51 @@ const searchMedia = async (req, res) => {
       return res.status(200).json([]);
     }
 
-    const media = await Media.find({
-      $or: [
-        { caption: { $regex: searchQuery, $options: "i" } },
-        { tags: { $regex: searchQuery, $options: "i" } },
-      ],
-    })
+    const media = await Media.find()
       .populate("uploadedBy", "name")
-      .populate("event", "title category date")
-      .sort({ createdAt: -1 });
+      .populate("event", "title category date");
 
-    res.status(200).json(media);
+    const filteredMedia = media.filter((item) => {
+      const captionMatch =
+        item.caption?.toLowerCase().includes(
+          searchQuery.toLowerCase()
+        );
+
+      const tagMatch = item.tags?.some((tag) =>
+        tag.toLowerCase().includes(
+          searchQuery.toLowerCase()
+        )
+      );
+
+      const eventMatch =
+        item.event?.title
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase());
+
+      const uploaderMatch =
+        item.uploadedBy?.name
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase());
+      
+          const formattedDate = new Date(
+  item.createdAt
+).toDateString().toLowerCase();
+
+const uploadDateMatch =
+  formattedDate.includes(
+    searchQuery.toLowerCase()
+  );
+
+      return (
+  captionMatch ||
+  tagMatch ||
+  eventMatch ||
+  uploaderMatch ||
+  uploadDateMatch
+);
+    });
+
+    res.status(200).json(filteredMedia);
   } catch (error) {
     res.status(500).json({
       message: error.message,
