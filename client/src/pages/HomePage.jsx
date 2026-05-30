@@ -15,15 +15,7 @@ function HomePage() {
           discover photos with AI, and collaborate securely.
         </p>
 
-        <div className="mt-8 flex gap-4">
-          <button className="rounded-xl bg-white px-5 py-3 font-medium text-slate-950">
-            Explore Events
-          </button>
-
-          <button className="rounded-xl border border-white/20 px-5 py-3 font-medium">
-            Upload Media
-          </button>
-        </div>
+        
       </section>
     </MainLayout>
   );

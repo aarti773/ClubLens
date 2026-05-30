@@ -62,11 +62,19 @@ function Navbar() {
           <Link to="/search" className="hover:text-white">
             AI Search
           </Link>
-           <Link to="/my-photos" className="hover:text-white">My Photos</Link>
+          <Link to="/my-photos" className="hover:text-white">
+            My Photos
+          </Link>
           {user?.role === "admin" && (
-            <Link to="/create-event" className="hover:text-white">
-              Create Event
-            </Link>
+            <>
+              <Link to="/create-event" className="block hover:text-white">
+                Create Event
+              </Link>
+
+              <Link to="/admin/users" className="block hover:text-white">
+                Manage Users
+              </Link>
+            </>
           )}
           {isLoggedIn && (
             <div className="relative">
@@ -217,13 +225,20 @@ function Navbar() {
           <Link to="/search" className="block hover:text-white">
             AI Search
           </Link>
-          <Link to="/my-photos" className="block hover:text-white">My Photos</Link>
+          <Link to="/my-photos" className="block hover:text-white">
+            My Photos
+          </Link>
           {user?.role === "admin" && (
-            <Link to="/create-event" className="block hover:text-white">
-              Create Event
-            </Link>
-          )}
+            <div className="space-y-2">
+              <Link to="/create-event" className="block hover:text-white">
+                Create Event
+              </Link>
 
+              <Link to="/admin/users" className="block hover:text-white">
+                Manage Users
+              </Link>
+            </div>
+          )}
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
             {isLoggedIn ? (
               <>
