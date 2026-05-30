@@ -69,7 +69,14 @@ const mediaSchema = new mongoose.Schema(
   },
 ],
 
-    comments: [commentSchema],
+taggedUsers: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+],
+
+comments: [commentSchema],
   },
   {
     timestamps: true,

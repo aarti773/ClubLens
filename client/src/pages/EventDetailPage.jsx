@@ -27,7 +27,7 @@ function EventDetailPage() {
   const [caption, setCaption] = useState("");
   const [visibility, setVisibility] = useState("public");
   const [tags, setTags] = useState("");
-
+  const [taggedUsers, setTaggedUsers] = useState("");
   const [uploading, setUploading] = useState(false);
   const [fileInputKey, setFileInputKey] = useState(Date.now());
   const [commentInputs, setCommentInputs] = useState({});
@@ -70,6 +70,7 @@ function EventDetailPage() {
         formData.append("event", id);
         formData.append("visibility", visibility);
         formData.append("tags", tags);
+        formData.append("taggedUsers", taggedUsers);
 
         const uploadedMedia = await uploadEventMedia(formData, token);
 
@@ -82,6 +83,7 @@ function EventDetailPage() {
       setFileInputKey(Date.now());
       setCaption("");
       setTags("");
+      setTaggedUsers("");
       setVisibility("public");
       setError("");
     } catch (error) {
@@ -296,6 +298,13 @@ function EventDetailPage() {
                       onChange={(event) => setTags(event.target.value)}
                       className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm outline-none"
                     />
+                    <input
+                      type="text"
+                      placeholder="Tag users by email: aarti@gmail.com, rahul@gmail.com"
+                      value={taggedUsers}
+                      onChange={(event) => setTaggedUsers(event.target.value)}
+                      className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm outline-none"
+                    />
 
                     <button
                       onClick={handleUpload}
@@ -347,6 +356,25 @@ function EventDetailPage() {
                                 #{tag}
                               </span>
                             ))}
+                          </div>
+                        )}
+
+                        {item.taggedUsers?.length > 0 && (
+                          <div className="mt-3">
+                            <p className="mb-2 text-xs text-slate-400">
+                              Tagged Users
+                            </p>
+
+                            <div className="flex flex-wrap gap-2">
+                              {item.taggedUsers.map((user) => (
+                                <span
+                                  key={user._id}
+                                  className="rounded-full bg-blue-500/10 px-3 py-1 text-xs text-blue-300"
+                                >
+                                  @{user.name}
+                                </span>
+                              ))}
+                            </div>
                           </div>
                         )}
 

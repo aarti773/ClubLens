@@ -3,10 +3,17 @@ const {
 } = require("../utils/aiTagGenerator");
 
 const Media = require("../models/Media");
+const User = require("../models/User");
 const Notification = require("../models/Notification");
 const uploadMedia = async (req, res) => {
   try {
-   const { caption, event, visibility, tags } = req.body;
+   const {
+  caption,
+  event,
+  visibility,
+  tags,
+  taggedUsers,
+} = req.body;
    const aiTags = await generateTagsFromText(
   caption || ""
 );
@@ -16,19 +23,47 @@ const uploadMedia = async (req, res) => {
       });
     }
 
-   const media = await Media.create({
+  const taggedEmails = taggedUsers
+  ? taggedUsers
+      .split(",")
+      .map((email) => email.trim())
+  : [];
+
+const usersToTag = await User.find({
+  email: { $in: taggedEmails },
+});
+
+const media = await Media.create({
   imageUrl: req.file.path,
   uploadedBy: req.user._id,
   event,
   caption,
   visibility: visibility || "public",
   tags: [
-  ...(tags
-    ? tags.split(",").map((tag) => tag.trim())
-    : []),
-  ...aiTags,
-],
+    ...(tags
+      ? tags.split(",").map((tag) => tag.trim())
+      : []),
+    ...aiTags,
+  ],
+  taggedUsers: usersToTag.map(
+    (user) => user._id
+  ),
 });
+
+for (const taggedUser of usersToTag) {
+  if (
+    taggedUser._id.toString() !==
+    req.user._id.toString()
+  ) {
+    await Notification.create({
+      recipient: taggedUser._id,
+      sender: req.user._id,
+      media: media._id,
+      type: "tag",
+      message: "tagged you in a photo",
+    });
+  }
+}
 
     res.status(201).json(media);
   } catch (error) {
@@ -47,11 +82,11 @@ const getEventMedia = async (req, res) => {
     if (!req.user) {
       query.visibility = "public";
     }
-
-    const media = await Media.find(query)
-      .populate("uploadedBy", "name")
-      .populate("comments.user", "name")
-      .sort({ createdAt: -1 });
+const media = await Media.find(query)
+  .populate("uploadedBy", "name")
+  .populate("taggedUsers", "name email")
+  .populate("comments.user", "name")
+  .sort({ createdAt: -1 });
 
     res.status(200).json(media);
   } catch (error) {
