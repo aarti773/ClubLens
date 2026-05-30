@@ -1,3 +1,4 @@
+import MyPhotosPage from "./pages/MyPhotosPage";
 import EventsPage from "./pages/EventsPage";
 import { Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
@@ -18,6 +19,7 @@ function App() {
       <Route path="/events" element={<EventsPage />} />
       <Route path="/gallery" element={<GalleryPage />} />
       <Route path="/search" element={<SearchPage />} />
+      <Route path="/my-photos" element={<MyPhotosPage />} />
       <Route path="/upload" element={<UploadPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />

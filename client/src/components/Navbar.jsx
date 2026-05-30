@@ -62,7 +62,7 @@ function Navbar() {
           <Link to="/search" className="hover:text-white">
             AI Search
           </Link>
-
+           <Link to="/my-photos" className="hover:text-white">My Photos</Link>
           {user?.role === "admin" && (
             <Link to="/create-event" className="hover:text-white">
               Create Event
@@ -217,7 +217,7 @@ function Navbar() {
           <Link to="/search" className="block hover:text-white">
             AI Search
           </Link>
-
+          <Link to="/my-photos" className="block hover:text-white">My Photos</Link>
           {user?.role === "admin" && (
             <Link to="/create-event" className="block hover:text-white">
               Create Event
