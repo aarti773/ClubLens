@@ -251,9 +251,26 @@ function EventDetailPage() {
                         className="hidden"
                       />
 
-                      {selectedImages.length > 0
-                        ? `${selectedImages.length} image(s) selected`
-                        : "Drag & drop images or click to select"}
+                      {selectedImages.length > 0 ? (
+                        <div className="space-y-3">
+                          <p className="font-medium text-white">
+                            {selectedImages.length} image(s) selected
+                          </p>
+
+                          <div className="grid grid-cols-3 gap-2">
+                            {selectedImages.map((image, index) => (
+                              <img
+                                key={index}
+                                src={URL.createObjectURL(image)}
+                                alt="Preview"
+                                className="h-20 w-full rounded-lg object-cover"
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        "Drag & drop images or click to select"
+                      )}
                     </label>
 
                     <input
