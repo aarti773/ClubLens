@@ -394,7 +394,9 @@ function EventDetailPage() {
                           <a
                             href={item.imageUrl.replace(
                               "/upload/",
-                              "/upload/fl_attachment/",
+                              `/upload/fl_attachment,l_text:Arial_24:${encodeURIComponent(
+                                `ClubLens • ${event.title} • ${user?.role || "viewer"}`,
+                              )},g_south_east,x_20,y_20,co_white/`,
                             )}
                             target="_blank"
                             rel="noreferrer"
