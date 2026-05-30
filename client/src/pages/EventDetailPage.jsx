@@ -31,7 +31,7 @@ function EventDetailPage() {
   const [uploading, setUploading] = useState(false);
   const [fileInputKey, setFileInputKey] = useState(Date.now());
   const [commentInputs, setCommentInputs] = useState({});
-
+  const [copiedMediaId, setCopiedMediaId] = useState(null);
   const { isLoggedIn, user } = useAuth();
   const currentUserId = user?._id || user?.id;
   useEffect(() => {
@@ -374,6 +374,22 @@ function EventDetailPage() {
                           >
                             Download
                           </a>
+
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(item.imageUrl);
+
+                              setCopiedMediaId(item._id);
+
+                              setTimeout(() => {
+                                setCopiedMediaId(null);
+                              }, 2000);
+                            }}
+                            className="rounded-lg border border-blue-500/30 px-3 py-2 text-xs text-blue-300 hover:bg-blue-500/10"
+                          >
+                            {copiedMediaId === item._id ? "✓ Copied" : "Share"}
+                          </button>
+
                           <span className="text-xs text-slate-500">
                             {item.comments?.length || 0} comments
                           </span>
