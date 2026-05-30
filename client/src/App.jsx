@@ -10,6 +10,7 @@ import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import EventDetailPage from "./pages/EventDetailPage";
 import CreateEventPage from "./pages/CreateEventPage";
+import AdminUsersPage from "./pages/AdminUsersPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -41,7 +42,14 @@ function App() {
           </ProtectedRoute>
         }
       />
-
+      <Route
+        path="/admin/users"
+        element={
+          <ProtectedRoute>
+            <AdminUsersPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/events/:id" element={<EventDetailPage />} />
     </Routes>
   );
