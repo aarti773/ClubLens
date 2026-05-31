@@ -5,6 +5,27 @@ const {
 const Media = require("../models/Media");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
+const cloudinary = require("../utils/cloudinary");
+function uploadBufferToCloudinary(fileBuffer) {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "clublens",
+        resource_type: "image",
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      }
+    );
+
+    uploadStream.end(fileBuffer);
+  });
+}
+
 const uploadMedia = async (req, res) => {
   try {
    const {
@@ -33,8 +54,12 @@ const usersToTag = await User.find({
   email: { $in: taggedEmails },
 });
 
+const uploadResult = await uploadBufferToCloudinary(
+  req.file.buffer
+);
+
 const media = await Media.create({
-  imageUrl: req.file.path,
+  imageUrl: uploadResult.secure_url,
   uploadedBy: req.user._id,
   event,
   caption,
