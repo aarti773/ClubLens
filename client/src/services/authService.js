@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL = `${import.meta.env.VITE_API_URL}/api/auth`;
 
 export async function registerUser(userData) {
   const response = await fetch(`${API_URL}/register`, {
@@ -41,7 +41,7 @@ export async function loginUser(userData) {
 }
 
 export async function getEvents() {
-  const response = await fetch("http://localhost:5000/api/events");
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/api/events`);
 
   const data = await response.json();
 
@@ -54,7 +54,7 @@ export async function getEvents() {
 
 export async function getEventById(eventId) {
   const response = await fetch(
-    `http://localhost:5000/api/events/${eventId}`
+    `${import.meta.env.VITE_API_URL}/api/events/${eventId}`
   );
 
   const data = await response.json();
@@ -76,7 +76,7 @@ export async function getEventMedia(eventId) {
   }
 
   const response = await fetch(
-    `http://localhost:5000/api/media/event/${eventId}`,
+    `${import.meta.env.VITE_API_URL}/api/media/event/${eventId}`,
     {
       headers,
     }
@@ -96,7 +96,7 @@ export async function uploadEventMedia(
   token
 ) {
   const response = await fetch(
-    "http://localhost:5000/api/media/upload",
+    "${import.meta.env.VITE_API_URL}/api/media/upload",
     {
       method: "POST",
 
@@ -122,7 +122,7 @@ export async function deleteEventMedia(
   token
 ) {
   const response = await fetch(
-    `http://localhost:5000/api/media/${mediaId}`,
+    `${import.meta.env.VITE_API_URL}/api/media/${mediaId}`,
     {
       method: "DELETE",
 
@@ -146,7 +146,7 @@ export async function createEvent(
   token
 ) {
   const response = await fetch(
-    "http://localhost:5000/api/events",
+    "${import.meta.env.VITE_API_URL}/api/events",
     {
       method: "POST",
 
@@ -173,7 +173,7 @@ export async function toggleMediaLike(
   token
 ) {
   const response = await fetch(
-    `http://localhost:5000/api/media/${mediaId}/like`,
+    `${import.meta.env.VITE_API_URL}/api/media/${mediaId}/like`,
     {
       method: "POST",
 
@@ -198,7 +198,7 @@ export async function addMediaComment(
   token
 ) {
   const response = await fetch(
-    `http://localhost:5000/api/media/${mediaId}/comments`,
+    `${import.meta.env.VITE_API_URL}/api/media/${mediaId}/comments`,
     {
       method: "POST",
 
@@ -224,7 +224,7 @@ export async function toggleMediaFavourite(
   token
 ) {
   const response = await fetch(
-    `http://localhost:5000/api/media/${mediaId}/favourite`,
+    `${import.meta.env.VITE_API_URL}/api/media/${mediaId}/favourite`,
     {
       method: "POST",
 
@@ -245,7 +245,7 @@ export async function toggleMediaFavourite(
 
 export async function searchMedia(query) {
   const response = await fetch(
-    `http://localhost:5000/api/media/search?query=${encodeURIComponent(query)}`
+    `${import.meta.env.VITE_API_URL}/api/media/search?query=${encodeURIComponent(query)}`
   );
 
   const data = await response.json();
