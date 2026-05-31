@@ -47,9 +47,7 @@ router.patch(
 
       const allowedRoles = [
         "admin",
-        "photographer",
-        "member",
-        "viewer",
+         "member",
       ];
 
       if (!allowedRoles.includes(role)) {
@@ -86,3 +84,5 @@ router.patch(
 );
 
 module.exports = router;
+
+
