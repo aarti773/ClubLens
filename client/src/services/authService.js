@@ -96,7 +96,7 @@ export async function uploadEventMedia(
   token
 ) {
   const response = await fetch(
-    "${import.meta.env.VITE_API_URL}/api/media/upload",
+    `${import.meta.env.VITE_API_URL}/api/media/upload`,
     {
       method: "POST",
 
@@ -146,7 +146,7 @@ export async function createEvent(
   token
 ) {
   const response = await fetch(
-    "${import.meta.env.VITE_API_URL}/api/events",
+    `${import.meta.env.VITE_API_URL}/api/events`,
     {
       method: "POST",
 
