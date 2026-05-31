@@ -22,12 +22,6 @@ GitHub Repository: https://github.com/aarti773/ClubLens
 
 ---
 
-## Demo Video
-
-Video Walkthrough: Add link here after uploading the demo video.
-
----
-
 ## Demo Credentials
 
 ### Admin Account
