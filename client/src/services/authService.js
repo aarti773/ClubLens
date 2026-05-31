@@ -256,3 +256,22 @@ export async function searchMedia(query) {
 
   return data;
 }
+
+export async function getAllGalleryMedia() {
+  const eventsData = await getEvents();
+
+  const allMediaResponses = await Promise.all(
+    eventsData.events.map(async (event) => {
+      const mediaList = await getEventMedia(
+        event._id
+      );
+
+      return mediaList.map((media) => ({
+        ...media,
+        eventTitle: event.title,
+      }));
+    })
+  );
+
+  return allMediaResponses.flat();
+}
