@@ -75,9 +75,8 @@ function AdminUsersPage() {
                         className="rounded-lg border border-white/10 bg-slate-900 px-3 py-2 text-white"
                       >
                         <option value="admin">Admin</option>
-                        <option value="photographer">Photographer</option>
                         <option value="member">Member</option>
-                        <option value="viewer">Viewer</option>
+                      
                       </select>
                     </td>
                   </tr>
