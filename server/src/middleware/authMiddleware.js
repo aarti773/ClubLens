@@ -37,7 +37,7 @@ async function protect(req, res, next) {
     next();
   } catch (error) {
     res.status(401).json({
-      message: "Token failed",
+      message:"Please login to continue",
     });
   }
 }
