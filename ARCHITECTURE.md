@@ -106,14 +106,12 @@ ClubLens uses JWT-based authentication and role-based authorization.
 Supported roles:
 
 Admin
-Photographer
 Member
-Viewer
 
 Example permissions:
 
 Admin can create events and manage user roles
-Admin, photographer, and member can upload media
+Admin, and member can upload media
 Logged-in users can like, comment, favourite, and tag users
 Public media can be viewed by everyone
 Private media is restricted based on access rules

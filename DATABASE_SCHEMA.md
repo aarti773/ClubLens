@@ -11,16 +11,14 @@ Stores registered platform users and their role-based access level.
 | name | String | User's full name |
 | email | String | Unique user email |
 | password | String | Hashed password |
-| role | String | User role: admin, photographer, member, viewer |
+| role | String | User role: admin, member,|
 | createdAt | Date | User creation timestamp |
 | updatedAt | Date | Last update timestamp |
 
 ### Roles
 
 - admin
-- photographer
 - member
-- viewer
 
 ## 2. Event Collection
 
