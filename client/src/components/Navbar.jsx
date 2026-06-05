@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { deleteMyAccount } from "../services/authService";
 import {
   getNotifications,
   markNotificationsAsRead,
@@ -9,15 +10,40 @@ import {
 function Navbar() {
   const { isLoggedIn, logout, user } = useAuth();
 
+  const [profileMessage, setProfileMessage] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   const avatarLetter = user?.name?.charAt(0)?.toUpperCase() || "G";
+
   const unreadCount = notifications.filter(
     (notification) => !notification.isRead,
   ).length;
+
+  async function handleDeleteAccount() {
+    setProfileMessage("");
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete your account? This cannot be undone.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+
+      await deleteMyAccount(token);
+
+      logout();
+      window.location.href = "/";
+    } catch (error) {
+      setProfileMessage(error.message);
+    }
+  }
 
   useEffect(() => {
     async function fetchNotifications() {
@@ -47,44 +73,29 @@ function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-4 text-sm text-slate-300 md:flex">
-          <Link to="/" className="hover:text-white">
-            Home
-          </Link>
-          <Link to="/dashboard" className="hover:text-white">
-            Dashboard
-          </Link>
-          <Link to="/events" className="hover:text-white">
-            Events
-          </Link>
-          <Link to="/gallery" className="hover:text-white">
-            Gallery
-          </Link>
-          <Link to="/search" className="hover:text-white">
-            AI Search
-          </Link>
-          <Link to="/my-photos" className="hover:text-white">
-            My Photos
-          </Link>
-          <Link to="/favourites" className="block hover:text-white">
-            Favourites
-          </Link>
+          <Link to="/" className="hover:text-white">Home</Link>
+          <Link to="/dashboard" className="hover:text-white">Dashboard</Link>
+          <Link to="/events" className="hover:text-white">Events</Link>
+          <Link to="/gallery" className="hover:text-white">Gallery</Link>
+          <Link to="/search" className="hover:text-white">AI Search</Link>
+          <Link to="/my-photos" className="hover:text-white">My Photos</Link>
+          <Link to="/favourites" className="hover:text-white">Favourites</Link>
+
           {user?.role === "admin" && (
             <>
-              <Link to="/create-event" className="block hover:text-white">
+              <Link to="/create-event" className="hover:text-white">
                 Create Event
               </Link>
-
-              <Link to="/admin/users" className="block hover:text-white">
+              <Link to="/admin/users" className="hover:text-white">
                 Manage Users
               </Link>
             </>
           )}
+
           {isLoggedIn && (
             <div className="relative">
               <button
-                onClick={() => {
-                  setIsNotificationOpen(!isNotificationOpen);
-                }}
+                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
                 className="relative rounded-full border border-white/10 px-3 py-2 text-lg hover:bg-white/10"
               >
                 🔔
@@ -149,9 +160,13 @@ function Navbar() {
               )}
             </div>
           )}
+
           <div className="relative">
             <button
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
+              onClick={() => {
+                setIsProfileOpen(!isProfileOpen);
+                setProfileMessage("");
+              }}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-white font-semibold text-slate-950"
             >
               {avatarLetter}
@@ -162,20 +177,32 @@ function Navbar() {
                 {isLoggedIn ? (
                   <>
                     <p className="font-semibold text-white">{user?.name}</p>
-
                     <p className="mt-1 text-xs text-slate-400">{user?.email}</p>
 
                     <span className="mt-3 inline-flex rounded-full bg-white/10 px-3 py-1 text-xs capitalize text-slate-300">
                       {user?.role}
                     </span>
 
+                    {profileMessage && (
+                      <p className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-300">
+                        {profileMessage}
+                      </p>
+                    )}
+
                     <div className="mt-4 flex flex-col gap-2">
+                      <button
+                        onClick={handleDeleteAccount}
+                        className="rounded-lg border border-red-500/30 px-3 py-2 text-left text-sm text-red-300 hover:bg-red-500/10"
+                      >
+                        Delete Account
+                      </button>
+
                       <button
                         onClick={() => {
                           logout();
                           setIsProfileOpen(false);
                         }}
-                        className="rounded-lg border border-red-500/30 px-3 py-2 text-left text-sm text-red-300 hover:bg-red-500/10"
+                        className="rounded-lg border border-white/10 px-3 py-2 text-left text-sm text-slate-300 hover:bg-white/10"
                       >
                         Logout
                       </button>
@@ -184,7 +211,6 @@ function Navbar() {
                 ) : (
                   <>
                     <p className="font-semibold text-white">Guest user</p>
-
                     <p className="mt-1 text-xs text-slate-400">
                       Sign in to upload private media and interact with albums.
                     </p>
@@ -213,48 +239,33 @@ function Navbar() {
 
       {isMenuOpen && (
         <div className="border-t border-white/10 px-6 py-5 text-sm text-slate-300 md:hidden">
-  <div className="flex flex-col gap-5">
-          <Link to="/" className="block hover:text-white">
-            Home
-          </Link>
-          <Link to="/dashboard" className="block hover:text-white">
-            Dashboard
-          </Link>
-          <Link to="/events" className="block hover:text-white">
-            Events
-          </Link>
-          <Link to="/gallery" className="block hover:text-white">
-            Gallery
-          </Link>
-          <Link to="/search" className="block hover:text-white">
-            AI Search
-          </Link>
-          <Link to="/my-photos" className="block hover:text-white">
-            My Photos
-          </Link>
-          <Link to="/favourites" className="block hover:text-white">
-            Favourites
-          </Link>
-          {user?.role === "admin" && (
-           <div className="flex flex-col gap-5">
-              <Link to="/create-event" className="block hover:text-white">
-                Create Event
-              </Link>
+          <div className="flex flex-col gap-5">
+            <Link to="/" className="block hover:text-white">Home</Link>
+            <Link to="/dashboard" className="block hover:text-white">Dashboard</Link>
+            <Link to="/events" className="block hover:text-white">Events</Link>
+            <Link to="/gallery" className="block hover:text-white">Gallery</Link>
+            <Link to="/search" className="block hover:text-white">AI Search</Link>
+            <Link to="/my-photos" className="block hover:text-white">My Photos</Link>
+            <Link to="/favourites" className="block hover:text-white">Favourites</Link>
 
-              <Link to="/admin/users" className="block hover:text-white">
-                Manage Users
-              </Link>
-            </div>
-          )}
+            {user?.role === "admin" && (
+              <>
+                <Link to="/create-event" className="block hover:text-white">
+                  Create Event
+                </Link>
+                <Link to="/admin/users" className="block hover:text-white">
+                  Manage Users
+                </Link>
+              </>
+            )}
           </div>
-          <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-4">
+
+          <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
             {isLoggedIn ? (
               <>
                 <div className="mb-4">
                   <button
-                    onClick={() => {
-                      setIsNotificationOpen(!isNotificationOpen);
-                    }}
+                    onClick={() => setIsNotificationOpen(!isNotificationOpen)}
                     className="relative rounded-lg border border-white/10 px-4 py-2 text-white"
                   >
                     🔔 Notifications
@@ -304,6 +315,7 @@ function Navbar() {
                     </div>
                   )}
                 </div>
+
                 <div className="flex items-center gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white font-semibold text-slate-950">
                     {avatarLetter}
@@ -317,9 +329,22 @@ function Navbar() {
                   </div>
                 </div>
 
+                {profileMessage && (
+                  <p className="mt-4 rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-300">
+                    {profileMessage}
+                  </p>
+                )}
+
+                <button
+                  onClick={handleDeleteAccount}
+                  className="mt-4 block text-red-300 hover:text-red-200"
+                >
+                  Delete Account
+                </button>
+
                 <button
                   onClick={logout}
-                  className="mt-4 block text-red-300 hover:text-red-200"
+                  className="mt-3 block text-slate-300 hover:text-white"
                 >
                   Logout
                 </button>

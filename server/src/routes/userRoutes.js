@@ -1,6 +1,8 @@
 const express = require("express");
 
 const User = require("../models/User");
+const Media = require("../models/Media");
+const Notification = require("../models/Notification");
 const {
   protect,
   authorize,
@@ -82,6 +84,40 @@ router.patch(
     }
   }
 );
+
+router.delete("/me", protect, async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    await Media.deleteMany({ uploadedBy: userId });
+
+    await Media.updateMany(
+      {},
+      {
+        $pull: {
+          likes: userId,
+          favourites: userId,
+          taggedUsers: userId,
+          comments: { user: userId },
+        },
+      }
+    );
+
+    await Notification.deleteMany({
+      $or: [{ recipient: userId }, { sender: userId }],
+    });
+
+    await User.findByIdAndDelete(userId);
+
+    res.status(200).json({
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to delete account",
+    });
+  }
+});
 
 module.exports = router;
 
