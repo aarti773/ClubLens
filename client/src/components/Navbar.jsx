@@ -65,6 +65,9 @@ function Navbar() {
           <Link to="/my-photos" className="hover:text-white">
             My Photos
           </Link>
+          <Link to="/favourites" className="block hover:text-white">
+            Favourites
+          </Link>
           {user?.role === "admin" && (
             <>
               <Link to="/create-event" className="block hover:text-white">
@@ -209,7 +212,8 @@ function Navbar() {
       </nav>
 
       {isMenuOpen && (
-        <div className="space-y-4 border-t border-white/10 px-6 py-5 text-sm text-slate-300 md:hidden">
+        <div className="border-t border-white/10 px-6 py-5 text-sm text-slate-300 md:hidden">
+  <div className="flex flex-col gap-5">
           <Link to="/" className="block hover:text-white">
             Home
           </Link>
@@ -228,8 +232,11 @@ function Navbar() {
           <Link to="/my-photos" className="block hover:text-white">
             My Photos
           </Link>
+          <Link to="/favourites" className="block hover:text-white">
+            Favourites
+          </Link>
           {user?.role === "admin" && (
-            <div className="space-y-2">
+           <div className="flex flex-col gap-5">
               <Link to="/create-event" className="block hover:text-white">
                 Create Event
               </Link>
@@ -239,7 +246,8 @@ function Navbar() {
               </Link>
             </div>
           )}
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          </div>
+          <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-4">
             {isLoggedIn ? (
               <>
                 <div className="mb-4">

@@ -364,6 +364,25 @@ const uploadDateMatch =
   }
 };
 
+const getFavouriteMedia = async (req, res) => {
+  try {
+    const media = await Media.find({
+      favourites: req.user._id,
+    })
+      .populate("uploadedBy", "name")
+      .populate("event", "title category date")
+      .populate("taggedUsers", "name email")
+      .populate("comments.user", "name")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(media);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   uploadMedia,
   getEventMedia,
@@ -372,4 +391,5 @@ module.exports = {
   addCommentToMedia,
   toggleFavouriteMedia,
   searchMedia,
+  getFavouriteMedia,
 };

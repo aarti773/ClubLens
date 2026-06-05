@@ -12,6 +12,7 @@ import EventDetailPage from "./pages/EventDetailPage";
 import CreateEventPage from "./pages/CreateEventPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import ProtectedRoute from "./components/ProtectedRoute";
+import FavouritesPage from "./pages/FavouritesPage";
 
 function App() {
   return (
@@ -21,6 +22,14 @@ function App() {
       <Route path="/gallery" element={<GalleryPage />} />
       <Route path="/search" element={<SearchPage />} />
       <Route path="/my-photos" element={<MyPhotosPage />} />
+      <Route
+        path="/favourites"
+        element={
+          <ProtectedRoute>
+            <FavouritesPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/upload" element={<UploadPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />

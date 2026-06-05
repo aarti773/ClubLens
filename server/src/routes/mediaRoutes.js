@@ -8,6 +8,7 @@ const {
   toggleFavouriteMedia,
   addCommentToMedia,
   searchMedia,
+  getFavouriteMedia,
 } = require("../controllers/mediaController");
 
 const {
@@ -39,6 +40,12 @@ router.get(
   optionalAuth,
   getEventMedia
 );
+
+router.get(
+  "/favourites",
+  protect,
+  getFavouriteMedia
+); 
 
 router.post(
   "/:mediaId/like",
