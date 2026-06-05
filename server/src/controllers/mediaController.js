@@ -6,12 +6,12 @@ const Media = require("../models/Media");
 const User = require("../models/User");
 const Notification = require("../models/Notification");
 const cloudinary = require("../utils/cloudinary");
-function uploadBufferToCloudinary(fileBuffer) {
+function uploadBufferToCloudinary(fileBuffer, resourceType) {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       {
         folder: "clublens",
-        resource_type: "image",
+        resource_type: resourceType,
       },
       (error, result) => {
         if (error) {
@@ -40,7 +40,7 @@ const uploadMedia = async (req, res) => {
 );
     if (!req.file) {
       return res.status(400).json({
-        message: "Image is required",
+        message: "Image or Video is required",
       });
     }
 
@@ -54,13 +54,19 @@ const usersToTag = await User.find({
   email: { $in: taggedEmails },
 });
 
+const mediaType = req.file.mimetype.startsWith("video")
+  ? "video"
+  : "image";
+
 const uploadResult = await uploadBufferToCloudinary(
-  req.file.buffer
+  req.file.buffer,
+  mediaType
 );
 
 const media = await Media.create({
   imageUrl: uploadResult.secure_url,
-  uploadedBy: req.user._id,
+mediaType,
+uploadedBy: req.user._id,
   event,
   caption,
   visibility: visibility || "public",

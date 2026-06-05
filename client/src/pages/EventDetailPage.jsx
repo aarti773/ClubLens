@@ -22,7 +22,7 @@ function EventDetailPage() {
   const [media, setMedia] = useState([]);
   const [error, setError] = useState("");
 
-  const [selectedImages, setSelectedImages] = useState([]);
+  const [selectedMedia, setSelectedMedia] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
   const [caption, setCaption] = useState("");
   const [visibility, setVisibility] = useState("public");
@@ -52,8 +52,8 @@ function EventDetailPage() {
 
   async function handleUpload() {
     try {
-      if (selectedImages.length === 0) {
-        setError("Please select at least one image");
+      if (selectedMedia.length === 0) {
+        setError("Please select at least one photo or video");
         return;
       }
       const token = localStorage.getItem("token");
@@ -62,7 +62,7 @@ function EventDetailPage() {
 
       const uploadedItems = [];
 
-      for (const image of selectedImages) {
+      for (const image of selectedMedia) {
         const formData = new FormData();
 
         formData.append("image", image);
@@ -79,7 +79,7 @@ function EventDetailPage() {
 
       setMedia((prevMedia) => [...uploadedItems, ...prevMedia]);
 
-      setSelectedImages([]);
+      setSelectedMedia([]);
       setFileInputKey(Date.now());
       setCaption("");
       setTags("");
@@ -97,11 +97,12 @@ function EventDetailPage() {
     event.preventDefault();
     setIsDragging(false);
 
-    const droppedFiles = Array.from(event.dataTransfer.files).filter((file) =>
-      file.type.startsWith("image/"),
+    const droppedFiles = Array.from(event.dataTransfer.files).filter(
+      (file) =>
+        file.type.startsWith("image/") || file.type.startsWith("video/"),
     );
 
-    setSelectedImages(droppedFiles);
+    setSelectedMedia(droppedFiles);
   }
 
   async function handleDelete(mediaId) {
@@ -219,14 +220,14 @@ function EventDetailPage() {
                 <div>
                   <h2 className="text-2xl font-semibold">Event Gallery</h2>
                   <p className="mt-1 text-sm text-slate-400">
-                    Photos uploaded by club members
+                    Photos and Videos uploaded by club members
                   </p>
                 </div>
               </div>
 
               {isLoggedIn && (
                 <div className="mb-8 rounded-2xl border border-white/10 bg-white/5 p-5">
-                  <h3 className="font-semibold">Upload a photo</h3>
+                  <h3 className="font-semibold">Upload Photos and Videos</h3>
 
                   <div className="mt-4 grid gap-4 md:grid-cols-3">
                     <label
@@ -245,33 +246,42 @@ function EventDetailPage() {
                       <input
                         key={fileInputKey}
                         type="file"
-                        accept="image/*"
+                        accept="image/*,video/*"
                         multiple
                         onChange={(event) =>
-                          setSelectedImages(Array.from(event.target.files))
+                          setSelectedMedia(Array.from(event.target.files))
                         }
                         className="hidden"
                       />
 
-                      {selectedImages.length > 0 ? (
+                      {selectedMedia.length > 0 ? (
                         <div className="space-y-3">
                           <p className="font-medium text-white">
-                            {selectedImages.length} image(s) selected
+                            {selectedMedia.length} media item(s) selected
                           </p>
 
                           <div className="grid grid-cols-3 gap-2">
-                            {selectedImages.map((image, index) => (
-                              <img
-                                key={index}
-                                src={URL.createObjectURL(image)}
-                                alt="Preview"
-                                className="h-20 w-full rounded-lg object-cover"
-                              />
-                            ))}
+                            {selectedMedia.map((file, index) =>
+                              file.type.startsWith("video/") ? (
+                                <video
+                                  key={index}
+                                  src={URL.createObjectURL(file)}
+                                  className="h-20 w-full rounded-lg object-cover"
+                                  controls
+                                />
+                              ) : (
+                                <img
+                                  key={index}
+                                  src={URL.createObjectURL(file)}
+                                  alt="Preview"
+                                  className="h-20 w-full rounded-lg object-cover"
+                                />
+                              ),
+                            )}
                           </div>
                         </div>
                       ) : (
-                        "Drag & drop images or click to select"
+                        "Drag & drop images/videos or click to select"
                       )}
                     </label>
 
@@ -300,7 +310,7 @@ function EventDetailPage() {
                     />
                     <input
                       type="text"
-                      placeholder="Tag users by email: aarti@gmail.com, rahul@gmail.com"
+                      placeholder="Tag users by email: user@gmail.com"
                       value={taggedUsers}
                       onChange={(event) => setTaggedUsers(event.target.value)}
                       className="rounded-xl border border-white/10 bg-slate-900 px-4 py-3 text-sm outline-none"
@@ -311,7 +321,7 @@ function EventDetailPage() {
                       disabled={uploading}
                       className="rounded-xl bg-white px-5 py-3 text-sm font-semibold text-slate-950 disabled:opacity-60"
                     >
-                      {uploading ? "Uploading..." : "Upload Photo"}
+                      {uploading ? "Uploading..." : "Upload"}
                     </button>
                   </div>
                 </div>
@@ -321,7 +331,7 @@ function EventDetailPage() {
                 <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 p-8 text-center">
                   <p className="text-slate-300">No media uploaded yet.</p>
                   <p className="mt-2 text-sm text-slate-500">
-                    Uploaded photos will appear here.
+                    Uploaded photos/videos will appear here.
                   </p>
                 </div>
               ) : (
@@ -331,11 +341,19 @@ function EventDetailPage() {
                       key={item._id}
                       className="overflow-hidden rounded-2xl border border-white/10 bg-white/5"
                     >
-                      <img
-                        src={item.imageUrl}
-                        alt={item.caption || event.title}
-                        className="h-52 w-full object-cover"
-                      />
+                      {item.mediaType === "video" ? (
+                        <video
+                          src={item.imageUrl}
+                          className="h-52 w-full object-cover"
+                          controls
+                        />
+                      ) : (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.caption || event.title}
+                          className="h-52 w-full object-cover"
+                        />
+                      )}
 
                       <div className="p-4">
                         <h3 className="font-medium">
@@ -469,7 +487,7 @@ function EventDetailPage() {
                               onClick={() => handleDelete(item._id)}
                               className="mt-4 rounded-lg border border-red-500/30 px-3 py-2 text-xs font-medium text-red-300 hover:bg-red-500/10"
                             >
-                              Delete Photo
+                              Delete Media
                             </button>
                           )}
                       </div>

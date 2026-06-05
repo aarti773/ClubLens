@@ -26,6 +26,12 @@ const mediaSchema = new mongoose.Schema(
       required: true,
     },
 
+    mediaType: {
+  type: String,
+  enum: ["image", "video"],
+  default: "image",
+},
+
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

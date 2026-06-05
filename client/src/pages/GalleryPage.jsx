@@ -31,7 +31,7 @@ function GalleryPage() {
             <h1 className="text-3xl font-bold">Gallery</h1>
 
             <p className="mt-2 text-slate-400">
-              View uploaded event photos in one place.
+              View uploaded event media in one place.
             </p>
           </div>
 
@@ -43,9 +43,7 @@ function GalleryPage() {
           </Link>
         </div>
 
-        {loading && (
-          <p className="mt-8 text-slate-400">Loading gallery...</p>
-        )}
+        {loading && <p className="mt-8 text-slate-400">Loading gallery...</p>}
 
         {error && (
           <p className="mt-8 rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-300">
@@ -55,9 +53,7 @@ function GalleryPage() {
 
         {!loading && !error && media.length === 0 && (
           <div className="mt-10 rounded-2xl border border-dashed border-white/10 bg-white/5 p-8 text-center">
-            <p className="text-slate-300">
-              No media uploaded yet.
-            </p>
+            <p className="text-slate-300">No media uploaded yet.</p>
           </div>
         )}
 
@@ -68,11 +64,19 @@ function GalleryPage() {
                 key={item._id}
                 className="overflow-hidden rounded-2xl border border-white/10 bg-white/5"
               >
-                <img
-                  src={item.imageUrl}
-                  alt={item.caption || "Event media"}
-                  className="h-64 w-full object-cover"
-                />
+                {item.mediaType === "video" ? (
+                  <video
+                    src={item.imageUrl}
+                    className="h-64 w-full object-cover"
+                    controls
+                  />
+                ) : (
+                  <img
+                    src={item.imageUrl}
+                    alt={item.caption || "Event media"}
+                    className="h-64 w-full object-cover"
+                  />
+                )}
 
                 <div className="p-4">
                   <p className="text-sm font-medium text-white">

@@ -59,16 +59,22 @@ function SearchPage() {
               key={item._id}
               className="overflow-hidden rounded-2xl border border-white/10 bg-white/5"
             >
-              <img
-                src={item.imageUrl}
-                alt={item.caption || "Search result"}
-                className="h-52 w-full object-cover"
-              />
+              {item.mediaType === "video" ? (
+                <video
+                  src={item.imageUrl}
+                  className="h-52 w-full object-cover"
+                  controls
+                />
+              ) : (
+                <img
+                  src={item.imageUrl}
+                  alt={item.caption || "Search result"}
+                  className="h-52 w-full object-cover"
+                />
+              )}
 
               <div className="p-4">
-                <h3 className="font-medium">
-                  {item.caption || "Event photo"}
-                </h3>
+                <h3 className="font-medium">{item.caption || "Event media"}</h3>
 
                 <p className="mt-2 text-sm text-slate-400">
                   {item.event?.title || "Unknown event"}
