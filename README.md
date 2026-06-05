@@ -1,24 +1,24 @@
 # ClubLens
 
-AI-powered Event & Media Management Platform for clubs and societies.
+Smart Event & Media Management Platform for Clubs, Societies, and Student Communities.
 
 ## Overview
 
-ClubLens is a full-stack MERN web application designed to help clubs and societies organize, manage, and share event media from a centralized platform.
+ClubLens is a full-stack MERN application designed to help clubs and societies organize, manage, discover, and share event media from a centralized platform.
 
-The platform supports event-wise media organization, cloud-based media storage, social interactions, AI-powered search, personalized photo discovery, and role-based access control.
+Traditional event media is often scattered across personal devices, cloud drives, and messaging groups, making it difficult to organize and retrieve content. ClubLens solves this problem by providing a unified platform where members can upload, discover, and interact with event media efficiently.
 
-Instead of storing photos across multiple drives and folders, ClubLens provides a single platform where members can upload, organize, discover, and interact with event media efficiently.
+The platform combines cloud-based media management, role-based access control, personalized photo discovery, social interaction features, analytics, and smart search capabilities.
 
 ---
 
 ## Live Demo
 
-Frontend: https://club-lens-frontend.vercel.app
+**Frontend:** https://club-lens-frontend.vercel.app
 
-Backend API: https://club-lens-q35q.vercel.app
+**Backend API:** https://club-lens-q35q.vercel.app
 
-GitHub Repository: https://github.com/aarti773/ClubLens
+**GitHub Repository:** https://github.com/aarti773/ClubLens
 
 ---
 
@@ -26,15 +26,15 @@ GitHub Repository: https://github.com/aarti773/ClubLens
 
 ### Admin Account
 
-Email: [admin@clublens.com]
+**Email:** [admin@clublens.com](mailto:admin@clublens.com)
 
-Password: 1234567
+**Password:** 1234567
 
 ### Member Account
 
-Email: [member@clublens.com]
+**Email:** [member@clublens.com](mailto:member@clublens.com)
 
-Password: 12345
+**Password:** 12345
 
 ---
 
@@ -52,34 +52,42 @@ Password: 12345
 
 * Create and manage events
 * Event-wise media organization
-* Event descriptions and metadata
 * Dynamic event pages
+* Event metadata management
 
 ### Media Management
 
-* Cloudinary-based image storage
-* Multi-image uploads
+* Photo uploads
+* Video uploads and playback
+* Cloudinary-based media storage
 * Upload preview before submission
 * Public and private media visibility
-* Central gallery across events
+* Media deletion for owners
+* Centralized gallery across events
 
 ### Social Features
 
-* Like photos
-* Comment on photos
-* Favourite media
-* Share event content
+* Likes
+* Comments
+* Favourites
+* User tagging
+* Media sharing
 
-### AI Features
+### Smart Features
 
-* Advanced media search
 * Facial-recognition based personalized photo discovery
+* Advanced media search
+* Media tagging
+* Dynamic watermarking
+* Real-time notifications
 
-### Notifications
+### Analytics Dashboard
 
-* Like notifications
-* Comment notifications
-* User interaction alerts
+* Total events statistics
+* Total media statistics
+* Photo and video analytics
+* User analytics
+* Private media statistics
 
 ### Admin Features
 
@@ -87,6 +95,7 @@ Password: 12345
 * Manage user roles
 * View platform users
 * Upload media
+* Access platform analytics
 
 ---
 
@@ -97,15 +106,15 @@ Password: 12345
 * Create events
 * Upload media
 * Manage users
-* Access administrative controls
+* Access analytics dashboard
 
 ### Member
 
 * Upload media
-* Like photos
-* Comment on photos
+* Like media
+* Comment on media
 * Favourite media
-* Access event galleries
+* Use personalized photo discovery
 
 ### Guest
 
@@ -142,9 +151,8 @@ Password: 12345
 
 * Cloudinary
 
-### AI
+### AI & Computer Vision
 
-* Gemini API
 * face-api.js
 
 ### Deployment
@@ -153,44 +161,16 @@ Password: 12345
 
 ---
 
-## Project Structure
+## Architecture Highlights
 
-```txt
-ClubLens/
-├── client/                  Frontend React application
-├── server/                  Backend Express API
-├── README.md
-├── DATABASE_SCHEMA.md
-└── ARCHITECTURE.md
-```
-
----
-
-## Database Schema
-
-### User
-
-* name
-* email
-* password
-* role
-
-### Event
-
-* title
-* description
-* category
-* date
-* createdBy
-
-### Media
-
-* imageUrl
-* event
-* uploadedBy
-* likes
-* favourites
-* comments
+* MERN-based architecture
+* Cloudinary media storage integration
+* JWT authentication
+* Role-based authorization
+* Analytics dashboard
+* Event-centric media organization
+* Facial-recognition powered photo discovery
+* REST API architecture
 
 ---
 
@@ -217,13 +197,13 @@ VITE_API_URL=
 
 ## Local Setup
 
-Clone the repository:
+### Clone Repository
 
 ```bash
 git clone https://github.com/aarti773/ClubLens.git
 ```
 
-Install backend dependencies:
+### Backend Setup
 
 ```bash
 cd server
@@ -231,7 +211,7 @@ npm install
 npm run dev
 ```
 
-Install frontend dependencies:
+### Frontend Setup
 
 ```bash
 cd client
@@ -243,11 +223,13 @@ npm run dev
 
 ## Documentation
 
-* Database Schema: DATABASE_SCHEMA.md
-* Architecture: ARCHITECTURE.md
+* DATABASE_SCHEMA.md
+* ARCHITECTURE.md
 
 ---
 
 ## Author
 
-Aarti
+**Aarti**
+
+Mechanical Engineering, IIT Roorkee
